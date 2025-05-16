@@ -26,7 +26,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/blog")
+@RequestMapping("/api/blog")
 public class BlogController {
     @Autowired
     private BlogService blogService;
