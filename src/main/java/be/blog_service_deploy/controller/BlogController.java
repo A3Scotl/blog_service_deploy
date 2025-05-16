@@ -1,5 +1,6 @@
 package be.blog_service_deploy.controller;
 
+import be.blog_service_deploy.model.Blog;
 import be.blog_service_deploy.service.impl.CloudinaryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -52,10 +53,10 @@ public class BlogController {
         return ResponseEntity.ok(response);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Blog> getBlogById(Long id) {
-//        return ResponseEntity.ok(blogService.getBlogById(id));
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<Blog> getBlogById(Long id) {
+        return ResponseEntity.ok(blogService.getBlogById(id));
+    }
 
     @PostMapping
     public ResponseEntity<BlogDTO> createBlog(
@@ -63,10 +64,6 @@ public class BlogController {
             @RequestParam("blog") String blogJson,
             @RequestHeader("User-Id") Long userId) {
 
-        // Kiểm tra quyền admin
-        if (!"ADMIN".equals(userServiceClient.getUserRoleById(userId))) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-        }
 
         // Kiểm tra file thumbnail
         if (thumbnail == null || thumbnail.isEmpty()) {
