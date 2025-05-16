@@ -91,13 +91,14 @@ public class BlogServiceImpl implements BlogService {
 
         blogDTO.setAuthorId(blog.getAuthorId());
 
-        UserResponse author = userServiceClient.getUserById(blogDTO.getAuthorId());
-        if (author != null) {
-            blogDTO.setAuthorName(author.getFullName());
-        }
-        else{
-            blogDTO.setAuthorName("Unknown");
-        }
+      try{
+          UserResponse author = userServiceClient.getUserById(blogDTO.getAuthorId());
+          if (author != null) {
+              blogDTO.setAuthorName(author.getFullName());
+          }
+      }catch(Exception e){
+          blogDTO.setAuthorName("Unknown");
+      }
 
         // Ánh xạ danh mục
         blogDTO.setCategoryId(blog.getCategory().getId());
@@ -111,15 +112,18 @@ public class BlogServiceImpl implements BlogService {
         // Lấy danh sách comment
         List<CommentDTO> commentDTOs = blog.getComments().stream().map(comment -> {
             CommentDTO commentDTO = new CommentDTO();
-            UserResponse userCmt = userServiceClient.getUserById(comment.getUserId());
+
             commentDTO.setId(comment.getId());
             commentDTO.setContent(comment.getContent());
             commentDTO.setUserId(comment.getUserId());
-           if(userCmt != null) {
-               commentDTO.setUserName(userCmt.getFullName());
-           }
-           else{
-               commentDTO.setUserName("Unknown");
+           try{
+               UserResponse userCmt = userServiceClient.getUserById(comment.getUserId());
+               if(userCmt != null) {
+                   commentDTO.setUserName(userCmt.getFullName());
+               }
+
+           } catch (Exception e) {
+                   commentDTO.setUserName("Unknown");
            }
             return commentDTO;
         }).collect(Collectors.toList());
@@ -129,15 +133,16 @@ public class BlogServiceImpl implements BlogService {
         // Lấy danh sách like
         List<LikeDTO> likeDTOs = blog.getLikes().stream().map(like -> {
             LikeDTO likeDTO = new LikeDTO();
-            UserResponse userLike = userServiceClient.getUserById(like.getUserId());
             likeDTO.setId(like.getId());
             likeDTO.setUserId(like.getUserId());
-            if(userLike!=null){
-                likeDTO.setUserName(userLike.getUserName());
-            }
-            else{
-                likeDTO.setUserName("Unknown");
-            }
+           try{
+               UserResponse userLike = userServiceClient.getUserById(like.getUserId());
+               if(userLike!=null){
+                   likeDTO.setUserName(userLike.getUserName());
+               }
+           } catch (Exception e) {
+               likeDTO.setUserName("Unknown");
+           }
 
             return likeDTO;
         }).collect(Collectors.toList());
