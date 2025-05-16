@@ -112,10 +112,7 @@ public class BlogController {
             @RequestParam("blog") String blogJson,
             @RequestHeader("User-Id") Long userId) {
 
-        // Kiểm tra quyền admin
-        if (!"ADMIN".equals(userServiceClient.getUserRoleById(userId))) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-        }
+
 
         // Parse JSON thành BlogDTO
         BlogDTO blogDTO;
@@ -151,9 +148,7 @@ public class BlogController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBlog(@PathVariable Long id, @RequestHeader("User-Id") Long userId) {
-        if (!"ADMIN".equals(userServiceClient.getUserRoleById(userId))) {
-            throw new RuntimeException("You do not have permission to delete this blog");
-        }
+
         blogService.deleteBlog(id);
     }
 
