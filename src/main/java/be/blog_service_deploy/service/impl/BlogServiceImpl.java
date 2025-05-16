@@ -91,13 +91,12 @@ public class BlogServiceImpl implements BlogService {
 
         blogDTO.setAuthorId(blog.getAuthorId());
 
-        // Lấy thông tin tác giả từ User Service
-        try {
-            UserResponse author = userServiceClient.getUserById(blog.getAuthorId());
+        UserResponse author = userServiceClient.getUserById(blogDTO.getAuthorId());
+        if (author != null) {
             blogDTO.setAuthorName(author.getFullName());
-        } catch (Exception e) {
-            // Xử lý trường hợp User Service không khả dụng hoặc user không tồn tại
-            blogDTO.setAuthorName("Unknown Author");
+        }
+        else{
+            blogDTO.setAuthorName("Unknown");
         }
 
         // Ánh xạ danh mục
@@ -108,12 +107,20 @@ public class BlogServiceImpl implements BlogService {
         // co the tach ra repository rieng cho comment va like (count)
         blogDTO.setCommentCount((long) Optional.ofNullable(blog.getComments()).orElse(Collections.emptyList()).size());
 
+
         // Lấy danh sách comment
         List<CommentDTO> commentDTOs = blog.getComments().stream().map(comment -> {
             CommentDTO commentDTO = new CommentDTO();
+            UserResponse userCmt = userServiceClient.getUserById(comment.getUserId());
             commentDTO.setId(comment.getId());
             commentDTO.setContent(comment.getContent());
             commentDTO.setUserId(comment.getUserId());
+           if(userCmt != null) {
+               commentDTO.setUserName(userCmt.getFullName());
+           }
+           else{
+               commentDTO.setUserName("Unknown");
+           }
             return commentDTO;
         }).collect(Collectors.toList());
         blogDTO.setComments(commentDTOs);
@@ -122,8 +129,16 @@ public class BlogServiceImpl implements BlogService {
         // Lấy danh sách like
         List<LikeDTO> likeDTOs = blog.getLikes().stream().map(like -> {
             LikeDTO likeDTO = new LikeDTO();
+            UserResponse userLike = userServiceClient.getUserById(like.getUserId());
             likeDTO.setId(like.getId());
             likeDTO.setUserId(like.getUserId());
+            if(userLike!=null){
+                likeDTO.setUserName(userLike.getUserName());
+            }
+            else{
+                likeDTO.setUserName("Unknown");
+            }
+
             return likeDTO;
         }).collect(Collectors.toList());
         blogDTO.setLikes(likeDTOs);

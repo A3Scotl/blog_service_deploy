@@ -51,12 +51,15 @@ public class CommentServiceImpl implements CommentService {
         commentDTO.setContent(comment.getContent());
         commentDTO.setUserId(comment.getUserId());
 
-        try {
-            UserResponse user = userServiceClient.getUserById(comment.getUserId());
-            commentDTO.setUserName(user.getFullName());
-        } catch (Exception e) {
-            commentDTO.setUserName("Unknown User");
+
+        UserResponse user = userServiceClient.getUserById(comment.getUserId());
+        if (user != null) {
+            commentDTO.setUserName(user.getUserName());
         }
+        else{
+            commentDTO.setUserName("Unknown");
+        }
+
 
         return commentDTO;
     }

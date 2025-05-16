@@ -54,7 +54,8 @@ public class BlogController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Blog> getBlogById(Long id) {
+    public ResponseEntity<Blog> getBlogById(@PathVariable Long id) {
+
         return ResponseEntity.ok(blogService.getBlogById(id));
     }
 
@@ -93,11 +94,12 @@ public class BlogController {
 
         // Gán authorId và authorName
         blogDTO.setAuthorId(userId);
-        try {
-            UserResponse user = userServiceClient.getUserById(userId);
+        UserResponse user = userServiceClient.getUserById(userId);
+        if (user != null) {
             blogDTO.setAuthorName(user.getFullName());
-        } catch (Exception e) {
-            blogDTO.setAuthorName("Unknown Author");
+        }
+        else{
+            blogDTO.setAuthorName("Unknown");
         }
 
         // Tạo bài đăng
